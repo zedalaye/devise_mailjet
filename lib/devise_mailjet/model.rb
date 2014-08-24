@@ -14,15 +14,6 @@ module Devise
     #   mailing_list_opt_in_by_default: Determines if the checkbox for the user to opt-in to the mailing list should
     #                                   be checked by default, or not.  Defaults to true.
     #
-    #   mailjet_api_key: The API key for accessing the mailjet service.  To generate a new API key, go to the
-    #                      account tab in your MailJet account and select API Keys & Authorized Apps, then add
-    #                      a key.  This defaults to 'your_api_key'
-    #
-    #   double_opt_in: Requires that users must click a link in a confirmation email to be added to your mailing list.
-    #                  Defaults to false.
-    #
-    #   send_welcome_email: Whether or not the user will get a final Welcome email    
-    #
     # Examples:
     #
     #   User.find(1).add_to_mailjet_list('Site Administrators List')
@@ -80,15 +71,12 @@ module Devise
 
       # mapper that helps convert list names to mailjet ids
       def mailjet_list_mapper
-        @@mailjet_list_mapper ||= MailjetListApiMapper.new(self.class.mailjet_api_key, self.class.double_opt_in, self.class.send_welcome_email)
+        @@mailjet_list_mapper ||= MailjetListApiMapper.new
       end
 
       module ClassMethods
-        Devise::Models.config(self, :mailjet_api_key)
         Devise::Models.config(self, :mailing_list_name)
         Devise::Models.config(self, :mailing_list_opt_in_by_default)
-        Devise::Models.config(self, :double_opt_in)
-        Devise::Models.config(self, :send_welcome_email)
       end
     end
   end
