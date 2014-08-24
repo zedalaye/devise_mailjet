@@ -12,7 +12,7 @@ module Devise
           load_cached_lists
           unless @lists.has_key?(list_name)
             list = mailjet_list.first(name: list_name)
-            list = mailjet_list.create(name: liste_name) if list.nil?
+            list = mailjet_list.create(name: list_name) if list.nil?
             @lists[list_name] = list.id
             save_cached_lists
           end
@@ -97,15 +97,15 @@ module Devise
 
         # the mailjet api helpers
         def mailjet_contact
-          Mailjet::Contact
+          ::Mailjet::Contact
         end
 
         def mailjet_list
-          Mailjet::Contactslist
+          ::Mailjet::Contactslist
         end
 
         def mailjet_rcpt
-          Mailjet::ListRecipient
+          ::Mailjet::Listrecipient
         end
       end
     end
