@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://zedalaye.github.com/devise_mailjet/"
   s.summary     = %q{Easy MailJet integration for Devise}
   s.description = %q{Devise MailJet adds a MailJet option to devise that easily enables users to join your mailing list when they create an account.}
+  s.licenses    = 'MIT'
 
   s.rubyforge_project = "devise_mailjet"
 
@@ -19,10 +20,10 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   {
-    'rails'  => '~> 4.1.5',
-    'devise' => '~> 3.3.0',
-    'devise-bootstrap-views' => '~> 0.0.3',
-    'mailjet' => '~> 1.0.0'
+    'rails'  => '~> 4.1',
+    'devise' => '~> 3.3',
+    'devise-bootstrap-views' => '~> 0.0',
+    'mailjet' => '~> 1.0'
   }.each do |lib, version|
     s.add_runtime_dependency(lib, *version)
   end
