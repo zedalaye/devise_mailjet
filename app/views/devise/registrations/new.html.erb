@@ -12,7 +12,7 @@
   <div><%= f.label :password_confirmation %><br />
   <%= f.password_field :password_confirmation %></div>
 
-  <%= render :partial => "devise/shared/mailchimp/form", :locals => {:form => f} %>
+  <%= render :partial => "devise/shared/mailjet/form", :locals => {:form => f} %>
 
   <div><%= f.submit "Sign up" %></div>
 <% end %>

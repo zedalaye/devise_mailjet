@@ -1,10 +1,10 @@
-require 'hominid'
+require 'mailjet'
 
 module Devise
   module Models
-    module Mailchimp
-      class MailchimpListApiMapper
-        LIST_CACHE_KEY = "devise_mailchimp/lists"
+    module Mailjet
+      class MailjetListApiMapper
+        LIST_CACHE_KEY = "devise_mailjet/lists"
 
         # craete a new ApiMapper with the provided API key
         def initialize(api_key, double_opt_in, send_welcome_email)
@@ -72,7 +72,7 @@ module Devise
 
         # the hominid api helper
         def hominid
-          Hominid::API.new(@api_key)
+          Mailjet::API.new(@api_key)
         end
       end
     end

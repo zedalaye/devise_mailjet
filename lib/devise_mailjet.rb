@@ -1,8 +1,8 @@
 require 'devise'
 
-require "devise_mailchimp/version"
+require "devise_mailjet/version"
 
-module DeviseMailchimp
+module DeviseMailjet
   class Engine < Rails::Engine
   end
   # Your code goes here...
@@ -11,7 +11,7 @@ end
 module Devise
   # Public: Default mailing list for user to join.  This can be an array of strings, or just one string.
   # By default, this is "Site List".  If this will be configurable for each user, override
-  # mailchimp_lists_to_join returning the list name or an array of list names for the user to
+  # mailjet_lists_to_join returning the list name or an array of list names for the user to
   # join.
   # Set mailing_list_name in the Devise configuration file (config/initializers/devise.rb)
   #
@@ -27,14 +27,14 @@ module Devise
   mattr_accessor :mailing_list_opt_in_by_default
   @@mailing_list_opt_in_by_default = true
 
-  # Public: The API key for accessing the mailchimp service.  To generate a new API key, go to the
-  # account tab in your MailChimp account and select API Keys & Authorized Apps, then add
+  # Public: The API key for accessing the mailjet service.  To generate a new API key, go to the
+  # account tab in your MailJet account and select API Keys & Authorized Apps, then add
   # a key.  This defaults to 'your_api_key'
-  # Set mailchimp_api_key in the Devise configuration file (config/initializers/devise.rb)
+  # Set mailjet_api_key in the Devise configuration file (config/initializers/devise.rb)
   #
-  #   Devise.mailchimp_api_key = "your_api_key"
-  mattr_accessor :mailchimp_api_key
-  @@mailchimp_api_key = 'your_api_key'
+  #   Devise.mailjet_api_key = "your_api_key"
+  mattr_accessor :mailjet_api_key
+  @@mailjet_api_key = 'your_api_key'
 
   # Public: Require double opt-in
   # Requires user to click a link in a confirmation email to be added to the mailing list.  Defaults
@@ -53,6 +53,6 @@ module Devise
 
 end
 
-Devise.add_module :mailchimp, :model => 'devise_mailchimp/model'
+Devise.add_module :mailjet, :model => 'devise_mailjet/model'
 
-require 'devise_mailchimp/mailchimp_list_api_mapper'
+require 'devise_mailjet/mailjet_list_api_mapper'

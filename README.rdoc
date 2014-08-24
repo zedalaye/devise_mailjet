@@ -1,6 +1,6 @@
-= Devise MailChimp
+= Devise MailJet
 
-Devise MailChimp adds a MailChimp option to {devise}[https://github.com/plataformatec/devise] that easily enables users
+Devise MailJet adds a MailJet option to {devise}[https://github.com/plataformatec/devise] that easily enables users
 to join your mailing list when they create an account.
 
 {Delayed Job}[https://github.com/collectiveidea/delayed_job] is used automatically if your project uses it, and the
@@ -8,19 +8,19 @@ mapping between list names and list ids is cached automatically.
 
 == Getting started
 
-In your Gemfile, add devise_mailchimp after devise:
+In your Gemfile, add devise_mailjet after devise:
 
   gem "devise"
-  gem "devise_mailchimp"  # Last officially released gem
+  gem "devise_mailjet"  # Last officially released gem
 
-In your User model, add :mailchimp to the devise call and make :join_mailing_list accessible:
+In your User model, add :mailjet to the devise call and make :join_mailing_list accessible:
 
-  devise :database_authenticatable, ..., :mailchimp
+  devise :database_authenticatable, ..., :mailjet
   attr_accessible :join_mailing_list
 
 In your devise initializer (config/initializers/devise.rb), set your API key and mailing list name:
 
-  Devise.mailchimp_api_key = 'your_api_key'
+  Devise.mailjet_api_key = 'your_api_key'
   Devise.mailing_list_name = 'List Name'
   Devise.double_opt_in = false  
   Devise.send_welcome_email = false  
@@ -28,7 +28,7 @@ In your devise initializer (config/initializers/devise.rb), set your API key and
 If you are using the default Devise registration views, the Join Mailing List checkbox is added automatically, if not,
 either include the form partial in your new registration form:
 
-  <%= render :partial => "devise/shared/mailchimp/form", :locals => {:form => f} %>
+  <%= render :partial => "devise/shared/mailjet/form", :locals => {:form => f} %>
 
 Or manually add a "Join Mailing List" checkbox to your new registration form:
 
@@ -40,51 +40,51 @@ If you are using Simple Form, you can use:
 
 == Configuration
 
-Create an initializer, and set your MailChimp API key.  To generate a new API key, go to the account tab in your
-MailChimp account and select API Keys & Authorized Apps, then add a key.
+Create an initializer, and set your MailJet API key.  To generate a new API key, go to the account tab in your
+MailJet account and select API Keys & Authorized Apps, then add a key.
 
-  Devise.mailchimp_api_key = 'your_api_key'
+  Devise.mailjet_api_key = 'your_api_key'
 
-Create a mailing list, and set the mailing list name in the initializer.  To create a MailChimp list, from your account
+Create a mailing list, and set the mailing list name in the initializer.  To create a MailJet list, from your account
 go to the Lists tab, then hit create list.
 
   Devise.mailing_list_name = 'List Name'
 
-Add options from the {MailChimp API Docs}[http://apidocs.mailchimp.com/api/1.3/] using the following code in user.rb model. For GROUPINGS, you can get the Group ID by clicking "import to" and looking at the URL https://us6.admin.mailchimp.com/lists/members/import?id=1234&grp=9999&int=1
+Add options from the {MailJet API Docs}[http://apidocs.mailjet.com/api/1.3/] using the following code in user.rb model. For GROUPINGS, you can get the Group ID by clicking "import to" and looking at the URL https://us6.admin.mailjet.com/lists/members/import?id=1234&grp=9999&int=1
 
-  def mailchimp_list_subscribe_options
+  def mailjet_list_subscribe_options
     {'FNAME' => self.first_name, 'LNAME' => self.last_name, 'GROUPINGS'=> { 0 => {'id' => 9999, 'groups' => "Signed Up" } } }
   end
 
-For all the configuration settings, take a look at the {model documenation}[http://rubydoc.info/github/jcnnghm/devise_mailchimp/master/Devise/Models/Mailchimp#].
+For all the configuration settings, take a look at the {model documenation}[http://rubydoc.info/github/jcnnghm/devise_mailjet/master/Devise/Models/Mailjet#].
 
 == Documentation
 
-Full documentation is available at {rdoc.info}[http://rdoc.info/github/jcnnghm/devise_mailchimp/master/frames].
+Full documentation is available at {rdoc.info}[http://rdoc.info/github/jcnnghm/devise_mailjet/master/frames].
 
 == Demo Application
 
-A demo application is available at {github}[https://github.com/jcnnghm/devise_mailchimp_demo].
+A demo application is available at {github}[https://github.com/jcnnghm/devise_mailjet_demo].
 
 == Example Usage
 
 Users will join the default mailing list if join_mailing_list is set to true when the user is created.  To manually add
 a user:
 
-  User.find(1).add_to_mailchimp_list('Site Administrators List')
+  User.find(1).add_to_mailjet_list('Site Administrators List')
 
 To manually remove a user:
 
-  User.find(1).remove_from_mailchimp_list('Site Administrators List')
+  User.find(1).remove_from_mailjet_list('Site Administrators List')
 
 NOTE:  You MUST have the users permission to add them to a mailing list.
 
 == Customization
 
 To have the user join more than one list, or to override the lists that the user will join, override
-mailchimp_lists_to_join in your model.  Your method should return a single list, or an array of lists.
+mailjet_lists_to_join in your model.  Your method should return a single list, or an array of lists.
 
-  def mailchimp_lists_to_join
+  def mailjet_lists_to_join
     lists = ["Site Users List"]
     lists << "Site Admins List" if admin?
     return lists
@@ -96,7 +96,7 @@ If all users will join the same list or lists, just set the mailing_list_name co
 
 Please help this software improve by submitting pull requests, preferably with tests.
 
-View our {contributors}[https://github.com/jcnnghm/devise_mailchimp/contributors].
+View our {contributors}[https://github.com/jcnnghm/devise_mailjet/contributors].
 
 == Copyright
 
