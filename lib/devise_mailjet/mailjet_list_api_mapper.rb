@@ -5,29 +5,29 @@ module Devise
     module Mailjet
       class MailjetListApiMapper
         LIST_CACHE_KEY = "devise_mailjet/lists"
-
-        # craete a new ApiMapper with the provided API key
-        def initialize(api_key, double_opt_in, send_welcome_email)
-          @api_key = api_key
-          @double_opt_in = double_opt_in
-          @send_welcome_email = send_welcome_email
-        end
+        CONTACT_CACHE_KEY = "devise_mailjet/contacts"
 
         # looks the name up in the cache.  if it doesn't find it, looks it up using the api and saves it to the cache
-        def name_to_id(list_name)
+        def list_name_to_id(list_name)
           load_cached_lists
-          if @lists.has_key?(list_name)
-            return @lists[list_name]
-          else
-            list_id = hominid.find_list_id_by_name(list_name)
-            if list_id.nil?
-              raise ListLookupError
-            else
-              @lists[list_name] = list_id
-              save_cached_lists
-              return @lists[list_name]
-            end
+          unless @lists.has_key?(list_name)
+            list = mailjet_list.first(name: list_name)
+            list = mailjet_list.create(name: liste_name) if list.nil?
+            @lists[list_name] = list.id
+            save_cached_lists
           end
+          @lists[list_name]
+        end
+
+        def contact_email_to_id(email)
+          load_cached_contacts
+          unless @contacts.has_key?(email)
+            contact = mailjet_contact.first(email: email)
+            contact = mailjet_contact.create(email: email) if contact.nil?
+            @contacts[email] = contact.id
+            save_cached_contacts
+          end
+          @contacts[email]
         end
 
         # subscribes the user to the named mailing list(s).  list_names can be the name of one list, or an array of
@@ -35,21 +35,34 @@ module Devise
         #
         # NOTE: Do not use this method unless the user has opted in.
         def subscribe_to_lists(list_names, email, options)
+          contact_id = contact_email_to_id(email)
           list_names = [list_names] unless list_names.is_a?(Array)
           list_names.each do |list_name|
-            list_id = name_to_id(list_name)
-            hominid.list_subscribe(list_id, email, options, 'html', @double_opt_in, true, true, @send_welcome_email)            
+            list_id = list_name_to_id(list_name)
+            lr = mailjet_rcpt.first('ListID' => list_id, 'ContactID' => contact_id)
+            if lr
+              lr.is_unsubscribed = false
+              lr.is_active = true
+              lr.save
+            else
+              mailjet_rcpt.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
+            end
           end
         end
 
         # unsubscribe the user from the named mailing list(s).  list_names can be the name of one list, or an array of
         # several.
         def unsubscribe_from_lists(list_names, email)
+          contact_id = contact_email_to_id(email)
           list_names = [list_names] unless list_names.is_a?(Array)
           list_names.each do |list_name|
-            list_id = name_to_id(list_name)
-            hominid.list_unsubscribe(list_id, email, false, false, false)
-            # don't delete, send goodbye, or send notification
+            list_id = list_name_to_id(list_name)
+            lr = mailjet_rcpt.first('ListID' => list_id, 'ContactID' => contact_id)
+            if lr
+              lr.is_unsubscribed = true
+              lr.is_active = false
+              lr.save
+            end
           end
         end
 
@@ -70,9 +83,29 @@ module Devise
           Rails.cache.write(LIST_CACHE_KEY, @lists)
         end
 
-        # the hominid api helper
-        def hominid
-          Mailjet::API.new(@api_key)
+        # load contacts from the cache
+        def load_cached_contacts
+          @contacts ||= Rails.cache.fetch(CONTACT_CACHE_KEY) do
+            {}
+          end.dup
+        end
+
+        # save the modified contacts back to the cache
+        def save_cached_contacts
+          Rails.cache.write(CONTACT_CACHE_KEY, @contacts)
+        end
+
+        # the mailjet api helpers
+        def mailjet_contact
+          Mailjet::Contact
+        end
+
+        def mailjet_list
+          Mailjet::Contactslist
+        end
+
+        def mailjet_rcpt
+          Mailjet::ListRecipient
         end
       end
     end
