@@ -50,21 +50,21 @@ go to the Lists tab, then hit create list.
 
   Devise.mailing_list_name = 'List Name'
 
-Add options from the {MailJet API Docs}[http://apidocs.mailjet.com/api/1.3/] using the following code in user.rb model. For GROUPINGS, you can get the Group ID by clicking "import to" and looking at the URL https://us6.admin.mailjet.com/lists/members/import?id=1234&grp=9999&int=1
+Add options from the {MailJet API Docs}[http://dev.mailjet.com/] using the following code in user.rb model. For GROUPINGS, you can get the Group ID by clicking "import to" and looking at the URL https://us6.admin.mailjet.com/lists/members/import?id=1234&grp=9999&int=1
 
   def mailjet_list_subscribe_options
     {'FNAME' => self.first_name, 'LNAME' => self.last_name, 'GROUPINGS'=> { 0 => {'id' => 9999, 'groups' => "Signed Up" } } }
   end
 
-For all the configuration settings, take a look at the {model documenation}[http://rubydoc.info/github/jcnnghm/devise_mailjet/master/Devise/Models/Mailjet#].
+For all the configuration settings, take a look at the {model documenation}[http://rubydoc.info/github/zedalaye/devise_mailjet/master/Devise/Models/Mailjet#].
 
 == Documentation
 
-Full documentation is available at {rdoc.info}[http://rdoc.info/github/jcnnghm/devise_mailjet/master/frames].
+Full documentation is available at {rdoc.info}[http://rdoc.info/github/zedalaye/devise_mailjet/master/frames].
 
 == Demo Application
 
-A demo application is available at {github}[https://github.com/jcnnghm/devise_mailjet_demo].
+A demo application is available at {github}[https://github.com/zedalaye/devise_mailjet_demo].
 
 == Example Usage
 
@@ -96,8 +96,8 @@ If all users will join the same list or lists, just set the mailing_list_name co
 
 Please help this software improve by submitting pull requests, preferably with tests.
 
-View our {contributors}[https://github.com/jcnnghm/devise_mailjet/contributors].
+View our {contributors}[https://github.com/zedalaye/devise_mailjet/contributors].
 
 == Copyright
 
-Copyright (c) 2011 {Justin Cunningham}[http://littlebitofcode.com]. See MIT_LICENSE for details.
+Copyright (c) 2011 {Justin Cunningham}[http://littlebitofcode.com] and 2014 {Pierre Yager}[http://levosgien.net]. See MIT_LICENSE for details.
