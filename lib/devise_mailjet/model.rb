@@ -30,17 +30,18 @@ module Devise
         after_update :commit_mailing_list_join
       end
 
+      def self.required_fields(klass)
+        [ :join_mailing_list ]
+      end
+
       # Set this to true to have the user automatically join the mailjet_lists_to_join
       def join_mailing_list=(join)
         join.downcase! if join.is_a?(String)
-        true_values = ['yes','true',true,'1',1]
-        join = true_values.include?(join)
-        @join_mailing_list = join
+        write_attribute(:join_mailing_list, ['yes','true',true,'1',1].include?(join))
       end
 
-      #
       def join_mailing_list
-        @join_mailing_list.nil? ? self.class.mailing_list_opt_in_by_default : @join_mailing_list
+        (new_record?) ? self.class.mailing_list_opt_in_by_default : read_attribute(:join_mailing_list)
       end
 
       # The mailing list or lists the user will join
@@ -54,8 +55,8 @@ module Devise
       # Add the user to the mailjet list with the specified name
       def add_to_mailjet_list(list_name)
         mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
-        options = self.respond_to?(:mailjet_list_subscribe_options) ? mailjet_list_subscribe_options : {}
-        mapper.subscribe_to_lists(list_name, self.email, options)        
+        # options = self.respond_to?(:mailjet_list_subscribe_options) ? mailjet_list_subscribe_options : {}
+        mapper.subscribe_to_lists(list_name, self.email)
       end
 
       # remove the user from the mailjet list with the specified name
@@ -66,7 +67,7 @@ module Devise
 
       # Commit the user to the mailing list if they have selected to join
       def commit_mailing_list_join
-        add_to_mailjet_list(mailjet_lists_to_join) if @join_mailing_list
+        add_to_mailjet_list(mailjet_lists_to_join) if self.join_mailing_list
       end
 
       # mapper that helps convert list names to mailjet ids
