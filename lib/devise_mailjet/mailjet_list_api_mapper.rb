@@ -35,11 +35,7 @@ module Devise
         #
         # NOTE: Do not use this method unless the user has opted in.
         def subscribe_to_lists(list_names, email)
-          contact_id = contact_email_to_id(email)
-          list_names = [list_names] unless list_names.is_a?(Array)
-          list_names.each do |list_name|
-            list_id = list_name_to_id(list_name)
-            lr = mailjet_rcpt.first('ListID' => list_id, 'ContactID' => contact_id)
+          walk_recipients(list_names, email) do |lr, list_id, contact_id|
             if lr.nil?
               mailjet_rcpt.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
             elsif lr.is_unsubscribed
@@ -53,11 +49,7 @@ module Devise
         # unsubscribe the user from the named mailing list(s).  list_names can be the name of one list, or an array of
         # several.
         def unsubscribe_from_lists(list_names, email)
-          contact_id = contact_email_to_id(email)
-          list_names = [list_names] unless list_names.is_a?(Array)
-          list_names.each do |list_name|
-            list_id = list_name_to_id(list_name)
-            lr = mailjet_rcpt.first('ListID' => list_id, 'ContactID' => contact_id)
+          walk_recipients(list_names, email) do |lr, _, _|
             if lr && !lr.is_unsubscribed
               lr.is_unsubscribed = true
               lr.is_active = false
@@ -69,6 +61,16 @@ module Devise
         class ListLookupError < RuntimeError; end
 
         private
+
+        def walk_recipients(list_names, email)
+          contact_id = contact_email_to_id(email)
+          list_names = [list_names] unless list_names.is_a?(Array)
+          list_names.each do |list_name|
+            list_id = list_name_to_id(list_name)
+            lr = mailjet_rcpt.first(:contacts_list => list_id, :contact =>  contact_id)
+            yield lr, list_id, contact_id if block_given?
+          end
+        end
 
         # load the list from the cache
         def load_cached_lists
