@@ -4,8 +4,8 @@ module Devise
   module Models
     module Mailjet
       class MailjetListApiMapper
-        LIST_CACHE_KEY = "devise_mailjet/lists"
-        CONTACT_CACHE_KEY = "devise_mailjet/contacts"
+        LISTS_CACHE_KEY = "devise_mailjet/lists"
+        CONTACTS_CACHE_KEY = "devise_mailjet/contacts"
 
         # looks the name up in the cache.  if it doesn't find it, looks it up using the api and saves it to the cache
         def list_name_to_id(list_name)
@@ -22,7 +22,7 @@ module Devise
         def contact_email_to_id(email)
           load_cached_contacts
           unless @contacts.has_key?(email)
-            contact = mailjet_contact.first(email: email)
+            contact = mailjet_contact.find(email) # email is a valid key for finding contact resources
             contact = mailjet_contact.create(email: email) if contact.nil?
             @contacts[email] = contact.id
             save_cached_contacts
@@ -34,18 +34,18 @@ module Devise
         # several.
         #
         # NOTE: Do not use this method unless the user has opted in.
-        def subscribe_to_lists(list_names, email, options)
+        def subscribe_to_lists(list_names, email)
           contact_id = contact_email_to_id(email)
           list_names = [list_names] unless list_names.is_a?(Array)
           list_names.each do |list_name|
             list_id = list_name_to_id(list_name)
             lr = mailjet_rcpt.first('ListID' => list_id, 'ContactID' => contact_id)
-            if lr
+            if lr.nil?
+              mailjet_rcpt.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
+            elsif lr.is_unsubscribed
               lr.is_unsubscribed = false
               lr.is_active = true
               lr.save
-            else
-              mailjet_rcpt.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
             end
           end
         end
@@ -58,7 +58,7 @@ module Devise
           list_names.each do |list_name|
             list_id = list_name_to_id(list_name)
             lr = mailjet_rcpt.first('ListID' => list_id, 'ContactID' => contact_id)
-            if lr
+            if lr && !lr.is_unsubscribed
               lr.is_unsubscribed = true
               lr.is_active = false
               lr.save
@@ -66,33 +66,32 @@ module Devise
           end
         end
 
-
         class ListLookupError < RuntimeError; end
 
         private
 
         # load the list from the cache
         def load_cached_lists
-          @lists ||= Rails.cache.fetch(LIST_CACHE_KEY) do
+          @lists ||= Rails.cache.fetch(LISTS_CACHE_KEY) do
             {}
           end.dup
         end
 
         # save the modified list back to the cache
         def save_cached_lists
-          Rails.cache.write(LIST_CACHE_KEY, @lists)
+          Rails.cache.write(LISTS_CACHE_KEY, @lists)
         end
 
         # load contacts from the cache
         def load_cached_contacts
-          @contacts ||= Rails.cache.fetch(CONTACT_CACHE_KEY) do
+          @contacts ||= Rails.cache.fetch(CONTACTS_CACHE_KEY) do
             {}
           end.dup
         end
 
         # save the modified contacts back to the cache
         def save_cached_contacts
-          Rails.cache.write(CONTACT_CACHE_KEY, @contacts)
+          Rails.cache.write(CONTACTS_CACHE_KEY, @contacts)
         end
 
         # the mailjet api helpers
