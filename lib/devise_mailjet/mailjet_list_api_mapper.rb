@@ -67,7 +67,7 @@ module Devise
           list_names = [list_names] unless list_names.is_a?(Array)
           list_names.each do |list_name|
             list_id = list_name_to_id(list_name)
-            lr = mailjet_rcpt.first(:contacts_list => list_id, :contact =>  contact_id)
+            lr = mailjet_rcpt.first('ContactsList' => list_id, 'Contact' =>  contact_id)
             yield lr, list_id, contact_id if block_given?
           end
         end
