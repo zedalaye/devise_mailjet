@@ -37,7 +37,7 @@ module Devise
         def subscribe_to_lists(list_names, email)
           walk_recipients(list_names, email) do |lr, list_id, contact_id|
             if lr.nil?
-              mailjet_rcpt.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
+              mailjet_rcpt.create(list_ID: list_id, contact_ID: contact_id, is_active: true)
             elsif lr.is_unsubscribed
               lr.is_unsubscribed = false
               lr.is_active = true
