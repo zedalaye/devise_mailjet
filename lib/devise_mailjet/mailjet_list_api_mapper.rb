@@ -44,6 +44,8 @@ module Devise
               lr.save
             end
           end
+        rescue Mailjet::ApiError
+          # ignore
         end
 
         # unsubscribe the user from the named mailing list(s).  list_names can be the name of one list, or an array of
@@ -56,6 +58,8 @@ module Devise
               lr.save
             end
           end
+        rescue Mailjet::ApiError
+          # ignore
         end
 
         class ListLookupError < RuntimeError; end
