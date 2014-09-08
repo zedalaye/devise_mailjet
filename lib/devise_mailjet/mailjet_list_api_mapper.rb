@@ -44,7 +44,7 @@ module Devise
               lr.save
             end
           end
-        rescue Mailjet::ApiError
+        rescue ::Mailjet::ApiError
           # ignore
         end
 
@@ -58,7 +58,7 @@ module Devise
               lr.save
             end
           end
-        rescue Mailjet::ApiError
+        rescue ::Mailjet::ApiError
           # ignore
         end
 
