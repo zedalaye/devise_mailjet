@@ -54,30 +54,52 @@ module Devise
 
       # Add the user to the mailjet list with the specified name
       def add_to_mailjet_list(list_name)
-        mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
-        # options = self.respond_to?(:mailjet_list_subscribe_options) ? mailjet_list_subscribe_options : {}
-        mapper.subscribe_to_lists(list_name, self.email)
+        if defined?(Sidekiq::Worker)
+          MailjetWorker.perform_async(:subscribe, list_name, self.email, mailjet_config)
+        else
+          mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
+          # options = self.respond_to?(:mailjet_list_subscribe_options) ? mailjet_list_subscribe_options : {}
+          mapper.subscribe_to_lists(list_name, self.email)
+        end
       end
 
       # remove the user from the mailjet list with the specified name
       def remove_from_mailjet_list(list_name)
-        mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
-        mapper.unsubscribe_from_lists(list_name, self.email)
+        if defined?(Sidekiq::Worker)
+          MailjetWorker.perform_async(:unsubscribe, list_name, self.email, mailjet_config)
+        else
+          mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
+          mapper.unsubscribe_from_lists(list_name, self.email)
+        end
       end
 
       # Commit the user to the mailing list if they have selected to join
       def commit_mailing_list_join
-        add_to_mailjet_list(mailjet_lists_to_join) if self.join_mailing_list
+        if self.join_mailing_list
+          add_to_mailjet_list(mailjet_lists_to_join)
+        else
+          remove_from_mailjet_list(mailjet_lists_to_join)
+        end
       end
 
       # mapper that helps convert list names to mailjet ids
       def mailjet_list_mapper
-        @@mailjet_list_mapper ||= MailjetListApiMapper.new
+        @@mailjet_list_api_mapper ||= MailjetListApiMapper.new
       end
 
       module ClassMethods
         Devise::Models.config(self, :mailing_list_name)
         Devise::Models.config(self, :mailing_list_opt_in_by_default)
+      end
+
+      private
+
+      def mailjet_config
+        {
+            'api_key'      => ::Mailjet.config.api_key,
+            'secret_key'   => ::Mailjet.config.secret_key,
+            'default_from' => ::Mailjet.config.default_from
+        }
       end
     end
   end

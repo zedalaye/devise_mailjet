@@ -31,3 +31,7 @@ end
 Devise.add_module :mailjet, :model => 'devise_mailjet/model'
 
 require 'devise_mailjet/mailjet_list_api_mapper'
+
+if defined?(Sidekiq::Worker)
+  require 'devise_mailjet/mailjet_worker'
+end
