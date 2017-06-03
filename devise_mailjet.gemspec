@@ -20,8 +20,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   {
-    'rails'  => '~> 4.1',
-    'devise' => '~> 3.3',
+    'rails'  => '~> 4.2',
+    'devise' => '~> 4.0',
     'devise-bootstrap-views' => '~> 0.0',
     'mailjet' => '~> 1.0'
   }.each do |lib, version|
