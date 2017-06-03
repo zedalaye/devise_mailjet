@@ -35,9 +35,7 @@ module Devise
             if lr.nil?
               ::Mailjet::Listrecipient.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
             elsif lr.is_unsubscribed
-              lr.is_unsubscribed = false
-              lr.is_active = true
-              lr.save
+              lr.update_attributes(is_unsubscribed: false, is_active: true)
             end
           end
         rescue ::Mailjet::ApiError
@@ -48,11 +46,7 @@ module Devise
         # several.
         def unsubscribe_from_lists(list_names, email)
           walk_recipients(list_names, email) do |lr, _, _|
-            if lr && !lr.is_unsubscribed
-              lr.is_unsubscribed = true
-              lr.is_active = false
-              lr.save
-            end
+            lr.update_attributes(is_unsubscribed: true, is_active: false) if lr && !lr.is_unsubscribed
           end
         rescue ::Mailjet::ApiError
           # ignore
