@@ -18,11 +18,21 @@ In your User model, add :mailjet to the devise call and make :join_mailing_list 
   devise :database_authenticatable, ..., :mailjet
   attr_accessor :join_mailing_list
 
-In your devise initializer (config/initializers/devise.rb), set your API key and mailing list name:
+In your mailjet initializer (config/initializers/mailjet.rb), set your API key and mailing list name:
 
-  Devise.mailjet_api_key = 'your_api_key'
-  Devise.mailing_list_name = 'List Name'
-  Devise.send_welcome_email = false  
+  Mailjet.configure do |config|
+    config.api_key      = 'your_api_key'
+    config.secret_key   = 'your_secret_key'
+    config.default_from = 'you@example.com'
+  end
+
+In your device initializer (config/initializers/device.rb), you can configue Mailjet specifics:
+
+  Devise.setup do |config|
+     # other Devise config parameters...
+     config.mailing_list_name = 'List Name'
+     config.mailing_list_opt_in_by_default = false
+  end
 
 If you are using the default Devise registration views, the Join Mailing List checkbox is added automatically, if not,
 either include the form partial in your new registration form:
@@ -42,7 +52,11 @@ If you are using Simple Form, you can use:
 Create an initializer, and set your MailJet API key.  To generate a new API key, go to the account tab in your
 MailJet account and select API Keys & Authorized Apps, then add a key.
 
-  Devise.mailjet_api_key = 'your_api_key'
+  Mailjet.configure do |config|
+    config.api_key      = 'your_api_key'
+    config.secret_key   = 'your_secret_key'
+    config.default_from = 'you@example.com'
+  end'
 
 Create a mailing list, and set the mailing list name in the initializer.  To create a MailJet list, from your account
 go to the Lists tab, then hit create list.
