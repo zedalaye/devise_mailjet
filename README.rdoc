@@ -16,13 +16,12 @@ In your Gemfile, add devise_mailjet after devise:
 In your User model, add :mailjet to the devise call and make :join_mailing_list accessible:
 
   devise :database_authenticatable, ..., :mailjet
-  attr_accessible :join_mailing_list
+  attr_accessor :join_mailing_list
 
 In your devise initializer (config/initializers/devise.rb), set your API key and mailing list name:
 
   Devise.mailjet_api_key = 'your_api_key'
   Devise.mailing_list_name = 'List Name'
-  Devise.double_opt_in = false  
   Devise.send_welcome_email = false  
 
 If you are using the default Devise registration views, the Join Mailing List checkbox is added automatically, if not,
