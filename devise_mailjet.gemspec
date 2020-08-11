@@ -12,8 +12,6 @@ Gem::Specification.new do |s|
   s.description = %q{Devise MailJet adds a MailJet option to devise that easily enables users to join your mailing list when they create an account.}
   s.licenses    = 'MIT'
 
-  s.rubyforge_project = "devise_mailjet"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
