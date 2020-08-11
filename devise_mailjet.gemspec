@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   {
-    'rails'  => '< 6.0',
+    'rails'  => '< 6.1',
     'devise' => '< 5.0',
     'devise-bootstrap-views' => '< 1.0',
     'mailjet' => '< 2.0'
