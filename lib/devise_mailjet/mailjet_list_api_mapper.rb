@@ -58,8 +58,7 @@ module Devise
 
         def walk_recipients(list_names, email)
           contact_id = contact_email_to_id(email)
-          list_names = [list_names] unless list_names.is_a?(Array)
-          list_names.each do |list_name|
+          Array(list_names).each do |list_name|
             list_id = list_name_to_id(list_name)
             lr = ::Mailjet::Listrecipient.all(list_id: list_id, contact_id: contact_id, limit: 1).first
             yield lr, list_id, contact_id if block_given?
