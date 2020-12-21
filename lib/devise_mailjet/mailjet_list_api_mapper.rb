@@ -33,9 +33,9 @@ module Devise
         def subscribe_to_lists(list_names, email)
           walk_recipients(list_names, email) do |lr, list_id, contact_id|
             if lr.nil?
-              ::Mailjet::Listrecipient.create('ListID' => list_id, 'ContactID' => contact_id, is_active: true)
+              ::Mailjet::Listrecipient.create(list_id: list_id, contact_id: contact_id)
             elsif lr.is_unsubscribed
-              lr.update_attributes(is_unsubscribed: false, is_active: true)
+              lr.update_attributes(is_unsubscribed: false)
             end
           end
         rescue ::Mailjet::ApiError
@@ -45,8 +45,8 @@ module Devise
         # unsubscribe the user from the named mailing list(s).  list_names can be the name of one list, or an array of
         # several.
         def unsubscribe_from_lists(list_names, email)
-          walk_recipients(list_names, email) do |lr, _, _|
-            lr.update_attributes(is_unsubscribed: true, is_active: false) if lr && !lr.is_unsubscribed
+          walk_recipients(list_names, email) do |lr, _l, _c|
+            lr.update_attributes(is_unsubscribed: true) if lr && !lr.is_unsubscribed
           end
         rescue ::Mailjet::ApiError
           # ignore
@@ -61,7 +61,7 @@ module Devise
           list_names = [list_names] unless list_names.is_a?(Array)
           list_names.each do |list_name|
             list_id = list_name_to_id(list_name)
-            lr = ::Mailjet::Listrecipient.all('ContactsList' => list_id, 'Contact' =>  contact_id, limit: 1).first
+            lr = ::Mailjet::Listrecipient.all(list_id: list_id, contact_id: contact_id, limit: 1).first
             yield lr, list_id, contact_id if block_given?
           end
         end
