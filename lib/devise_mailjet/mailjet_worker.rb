@@ -7,6 +7,7 @@ module Devise
         def perform(action, list_names, email, config)
           if config.is_a?(Hash)
             ::Mailjet.configure do |c|
+              c.api_version  = 'v3'
               c.api_key      = config['api_key']
               c.secret_key   = config['secret_key']
               c.default_from = config['default_from']
