@@ -37,7 +37,7 @@ module Devise
       # Set this to true to have the user automatically join the mailjet_lists_to_join
       def join_mailing_list=(join)
         join.downcase! if join.is_a?(String)
-        write_attribute(:join_mailing_list, ['yes','true',true,'1',1].include?(join))
+        write_attribute(:join_mailing_list, ['yes', 'true', true, '1', 1].include?(join))
       end
 
       def join_mailing_list
@@ -96,9 +96,9 @@ module Devise
 
       def mailjet_config
         {
-            'api_key'      => ::Mailjet.config.api_key,
-            'secret_key'   => ::Mailjet.config.secret_key,
-            'default_from' => ::Mailjet.config.default_from
+          'api_key'      => ::Mailjet.config.api_key,
+          'secret_key'   => ::Mailjet.config.secret_key,
+          'default_from' => ::Mailjet.config.default_from
         }
       end
     end
