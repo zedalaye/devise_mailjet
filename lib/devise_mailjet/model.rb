@@ -45,11 +45,12 @@ module Devise
       end
 
       # The mailing list or lists the user will join
-      # Should return either a single string or an array of strings.  By default, returns the mailing_list_name
-      # configuration option.  If you want to customize the lists based on other information, override this method in
-      # your model.
+      # Should return nil, a single string or an array of strings.
+      # By default, returns the mailing_list_name configuration option. If you want to customize the lists based on
+      # other information, override this method in your model.
+      # Returning nil disables the (un)subscription to the mailing lists
       def mailjet_lists_to_join
-        self.class.mailing_list_name
+         self.class.mailing_list_name
       end
 
       # Add the user to the mailjet list with the specified name
@@ -75,10 +76,13 @@ module Devise
 
       # Commit the user to the mailing list if they have selected to join
       def commit_mailing_list_join
+        lists = mailjet_lists_to_join
+        return if Array(lists).empty?
+
         if self.join_mailing_list
-          add_to_mailjet_list(mailjet_lists_to_join)
+          add_to_mailjet_list(lists)
         else
-          remove_from_mailjet_list(mailjet_lists_to_join)
+          remove_from_mailjet_list(lists)
         end
       end
 
