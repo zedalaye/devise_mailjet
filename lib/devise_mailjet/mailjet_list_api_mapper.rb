@@ -33,9 +33,9 @@ module Devise
         def subscribe_to_lists(list_names, email)
           walk_recipients(list_names, email) do |lr, list_id, contact_id|
             if lr.nil?
-              ::Mailjet::Listrecipient.create(list_id: list_id, contact_id: contact_id)
+              ::Mailjet::Listrecipient.create(list_id: list_id, contact_id: contact_id, is_unsubscribed: 'false')
             elsif lr.is_unsubscribed
-              lr.update_attributes(is_unsubscribed: 'false')
+              lr.update_attributes(is_unsubscribed: 'false', unsubscribed_at: nil)
             end
           end
         rescue ::Mailjet::ApiError
@@ -46,7 +46,7 @@ module Devise
         # several.
         def unsubscribe_from_lists(list_names, email)
           walk_recipients(list_names, email) do |lr, _l, _c|
-            lr.update_attributes(is_unsubscribed: 'true') if lr && !lr.is_unsubscribed
+            lr.update_attributes(is_unsubscribed: 'true', unsubscribed_at: nil) if lr && !lr.is_unsubscribed
           end
         rescue ::Mailjet::ApiError
           # ignore
@@ -60,7 +60,10 @@ module Devise
           contact_id = contact_email_to_id(email)
           Array(list_names).each do |list_name|
             list_id = list_name_to_id(list_name)
-            lr = ::Mailjet::Listrecipient.all(list_id: list_id, contact_id: contact_id, limit: 1).first
+            # Beware: [GET] parameters are not the same than [POST/PUT] parameters
+            lr = ::Mailjet::Listrecipient.all(contacts_list: list_id, contact: contact_id, limit: 1).first
+            # Make sure the API returned the record we were looking for
+            lr = nil unless lr.list_id == list_id && lr.contact_id == contact_id
             yield lr, list_id, contact_id if block_given?
           end
         end
