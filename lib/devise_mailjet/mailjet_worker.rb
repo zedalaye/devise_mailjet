@@ -14,6 +14,13 @@ module Devise
             end
           end
 
+          ## Uncomment to debug
+          # RestClient.log = Object.new.tap do |proxy|
+          #   def proxy.<<(message)
+          #     Sidekiq.logger.info message
+          #   end
+          # end
+
           mapper = MailjetListApiMapper.new
           if action == 'subscribe'
             mapper.subscribe_to_lists(list_names, email)
