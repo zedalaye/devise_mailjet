@@ -63,7 +63,7 @@ module Devise
             # Beware: [GET] parameters are not the same than [POST/PUT] parameters
             lr = ::Mailjet::Listrecipient.all(contacts_list: list_id, contact: contact_id, limit: 1).first
             # Make sure the API returned the record we were looking for
-            lr = nil unless lr.list_id == list_id && lr.contact_id == contact_id
+            lr = nil unless lr && lr.list_id == list_id && lr.contact_id == contact_id
             yield lr, list_id, contact_id if block_given?
           end
         end
