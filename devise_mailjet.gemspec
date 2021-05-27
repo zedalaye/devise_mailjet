@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = DeviseMailjet::VERSION
   s.authors     = ["Justin Cunningham", "Pierre Yager"]
   s.email       = ["justin@compucatedsolutions.com", "pierre@levosgien.net"]
-  s.homepage    = "http://zedalaye.github.com/devise_mailjet/"
+  s.homepage    = "https://github.com/zedalaye/devise_mailjet"
   s.summary     = %q{Easy MailJet integration for Devise}
   s.description = %q{Devise MailJet adds a MailJet option to devise that easily enables users to join your mailing list when they create an account.}
   s.licenses    = 'MIT'
