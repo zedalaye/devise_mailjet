@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   {
-    'rails'  => '< 6.1',
-    'devise' => '< 5.0',
-    'devise-bootstrap-views' => '< 1.0',
-    'mailjet' => '< 2.0'
+    'rails'  => '< 7',
+    'devise' => '< 5',
+    'devise-bootstrap-views' => '< 1',
+    'mailjet' => '< 2'
   }.each do |lib, version|
     s.add_runtime_dependency(lib, *version)
   end
