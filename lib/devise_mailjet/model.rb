@@ -56,7 +56,7 @@ module Devise
       # Add the user to the mailjet list with the specified name
       def add_to_mailjet_list(list_name)
         if defined?(Sidekiq::Worker)
-          MailjetWorker.perform_async(:subscribe, list_name, self.email, mailjet_config)
+          MailjetWorker.perform_async("subscribe", list_name, self.email, mailjet_config)
         else
           mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
           # options = self.respond_to?(:mailjet_list_subscribe_options) ? mailjet_list_subscribe_options : {}
@@ -67,7 +67,7 @@ module Devise
       # remove the user from the mailjet list with the specified name
       def remove_from_mailjet_list(list_name)
         if defined?(Sidekiq::Worker)
-          MailjetWorker.perform_async(:unsubscribe, list_name, self.email, mailjet_config)
+          MailjetWorker.perform_async("unsubscribe", list_name, self.email, mailjet_config)
         else
           mapper = mailjet_list_mapper.respond_to?(:delay) ? mailjet_list_mapper.delay : mailjet_list_mapper
           mapper.unsubscribe_from_lists(list_name, self.email)
