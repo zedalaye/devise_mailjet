@@ -15,13 +15,14 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.required_ruby_version = '>= 3.0'
+
   s.require_paths = ["lib"]
 
   {
-    'rails'  => '< 7',
-    'devise' => '< 5',
-    'devise-bootstrap-views' => '< 1',
-    'mailjet' => '< 2'
+    'rails'  => ['>= 6.1', '< 9'],
+    'devise' => ['>= 4', '< 6'],
+    'mailjet' => ['>= 1', '< 3']
   }.each do |lib, version|
     s.add_runtime_dependency(lib, *version)
   end
